@@ -8,4 +8,4 @@ Designed and implemented YelpCamp (a Yelp style website for campsites) that supp
 
 Designed and implemented MongoDB infrastructure to store reviews/comments data and relevant information associated with users and campsites.
 
-A Springified version of Colt Steele's famous Yelpcamp project from The Web Developer Bootcamp.
+A Springified version of Yelpcamp project.
