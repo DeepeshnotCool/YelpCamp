@@ -1,0 +1,107 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id "org.sonarqube" version "3.1.1"
+    id 'jacoco'
+    id 'checkstyle'
+    id 'net.researchgate.release' version '2.6.0'
+}
+
+group = 'me.jysh'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled true
+        html.destination file("$buildDir/reports/jacoco")
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true
+            limit {
+                counter = 'BRANCH'
+                minimum = 0.80
+            }
+            excludes = []
+        }
+
+        rule {
+            enabled = true
+            limit {
+                counter = 'LINE'
+                minimum = 0.80
+            }
+            excludes = []
+        }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "codeghoul_spring-yelpcamp"
+        property "sonar.organization", "codeghoul"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${rootProject.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    }
+}
+
+checkstyle {
+    toolVersion = '8.12'
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
+
+checkstyleMain {
+    source = 'src/main/java'
+}
+checkstyleTest {
+    source = 'src/test/java'
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+test.finalizedBy jacocoTestReport
+// jacocoTestCoverageVerification.dependsOn jacocoTestReport
+// check.dependsOn jacocoTestCoverageVerification
+
+test {
+    useJUnitPlatform()
+}
